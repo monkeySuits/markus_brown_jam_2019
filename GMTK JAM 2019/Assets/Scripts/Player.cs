@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class Player : MonoBehaviour {
-    #region ATTRIBUTES
+    #region MOVEMENT
     [SerializeField] float jumpVelocity = 5f;
     [SerializeField] float groundedSkin = 0.05f;
     [SerializeField] LayerMask mask;
@@ -18,6 +18,11 @@ public class Player : MonoBehaviour {
     Vector2 playerSize, boxSize;
     #endregion
 
+    #region GAME LOOP
+    bool firstJump;
+    int jumpCount = 0;
+    #endregion
+
     void Awake() {
         rb = GetComponent<Rigidbody2D>();
 
@@ -29,7 +34,13 @@ public class Player : MonoBehaviour {
     void Update() {
         //sets jump for the next fixed update
         if (Input.GetButtonDown("Jump")) {
-            jumpRequest = true; 
+            jumpRequest = true;
+
+            //hide main menu and start game on first screen
+            if (!firstJump) {
+                firstJump = true;
+                UIManager.instance.StartGame();
+            }
         }        
     }
 
@@ -42,6 +53,10 @@ public class Player : MonoBehaviour {
         if (jumpRequest && grounded) {
             rb.AddForce(Vector2.up * jumpVelocity, ForceMode2D.Impulse);
             jumpRequest = false;
+
+            //add jump counter
+            jumpCount++;
+            UIManager.instance.CountJump(jumpCount);
         }
 
         if (rb.velocity.y < 0) {
