@@ -20,7 +20,7 @@ public class Player : MonoBehaviour {
 
     #region GAME LOOP
     bool firstJump;
-    int jumpCount = 0;
+    int jumpMultiplier = 1;
     #endregion
 
     void Awake() {
@@ -39,7 +39,7 @@ public class Player : MonoBehaviour {
             //hide main menu and start game on first screen
             if (!firstJump) {
                 firstJump = true;
-                UIManager.instance.StartGame();
+                MatchManager.instance.StartGame();
             }
         }        
     }
@@ -55,8 +55,7 @@ public class Player : MonoBehaviour {
             jumpRequest = false;
 
             //add jump counter
-            jumpCount++;
-            UIManager.instance.CountJump(jumpCount);
+            MatchManager.instance.CountJump(jumpMultiplier);
         }
 
         if (rb.velocity.y < 0) {
@@ -67,6 +66,14 @@ public class Player : MonoBehaviour {
         }
         else {
             rb.gravityScale = 1f; //normal scale
+        }
+    }
+
+    //collision with objects
+    void OnCollisionEnter2D(Collision2D collision) {
+        if (collision.gameObject.tag == "Enemy") {
+            firstJump = false;
+            MatchManager.instance.EndGame();
         }
     }
 }
