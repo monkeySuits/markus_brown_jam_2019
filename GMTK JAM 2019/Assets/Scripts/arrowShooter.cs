@@ -4,21 +4,17 @@ using UnityEngine;
 
 public class arrowShooter : MonoBehaviour {
     public Transform[] spawnPoints;
-    public GameObject arrowPrefab;
-    public float timeToSpawn;
+    public ArrowMovement arrowPrefab;
+    public float arrowSpeed;
+
+    public float timeToSpawn;    
 
     float curTime;
     bool active;
 
-    void OnEnable() {
-        MatchManager.instance.ActivateTrapEvent += Activate;
-    }
+    ArrowMovement arrowClone;
 
-    void OnDisable() {
-        MatchManager.instance.ActivateTrapEvent -= Activate;
-    }
-
-    void Activate(bool _active) {
+    public void Activate(bool _active) {
         active = _active;
     }
 
@@ -35,6 +31,8 @@ public class arrowShooter : MonoBehaviour {
     }
 
     void SpawnArrow() {
-        Instantiate(arrowPrefab, spawnPoints[Random.Range(0, spawnPoints.Length)]);
+        arrowClone = Instantiate(arrowPrefab, spawnPoints[Random.Range(0, spawnPoints.Length)]);
+        Destroy(arrowClone.gameObject, 8f);
+        arrowClone.speed = arrowSpeed;
     }    
 }

@@ -6,7 +6,8 @@ using UnityEngine;
 public class MatchManager : MonoBehaviour {
     public static MatchManager instance;
 
-    public event Action<bool> ActivateTrapEvent = delegate { };
+    [SerializeField] ArrowShooterManager arrowManager;
+    [SerializeField] groundSpikes spikes;
     int score;
 
     void Awake() {
@@ -20,7 +21,8 @@ public class MatchManager : MonoBehaviour {
 
     public void StartGame() {
         //activate traps
-        ActivateTrapEvent(true);
+        arrowManager.Activate(true);
+        spikes.Activate(true);
 
         //resets score
         score = 0;
@@ -35,7 +37,8 @@ public class MatchManager : MonoBehaviour {
     }
 
     public void EndGame() {
-        ActivateTrapEvent(false);
+        arrowManager.Activate(false);
+        spikes.Activate(false);
 
         int previousScore = SaveSystem.LoadHighscore();
 

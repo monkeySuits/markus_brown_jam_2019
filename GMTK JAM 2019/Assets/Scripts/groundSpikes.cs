@@ -14,37 +14,36 @@ public class groundSpikes : MonoBehaviour {
     public float activatedTime;
     bool trapActive;
 
-    void OnEnable() {
-        MatchManager.instance.ActivateTrapEvent += Activate;
-    }
+    Animator anim;
 
-    void OnDisable() {
-        MatchManager.instance.ActivateTrapEvent -= Activate;
-    }
+    [SerializeField] AudioClip trapSound;
 
-    void Activate(bool _active) {
+    public void Activate(bool _active) {
+        anim.SetTrigger("Hidden");
         trapActive = _active;
+        curTime = 0;
     }
 
     void Start() {
+        anim = GetComponent<Animator>();
+
         curTime = 0;
         waitTime = Random.Range(minTimeToSpike, maxTimeToSpike);
     }
 
     void Update() {
-        Debug.Log(isActive);
-
         if (trapActive) {
             if (!isActive) {
                 if (curTime <= waitTime) {
                     curTime += Time.deltaTime;
-                    if (curTime >= waitTime - delayAfterWarning)
+                    if (curTime >= waitTime - delayAfterWarning) {
+                        anim.SetTrigger("Warning");
                         Debug.Log("WARNING");
+                    }
                 }
                 else {
                     StartCoroutine(ActivateDelay());
                     curTime = 0;
-                    //waitForActivation = false;
                 }
             }
         }
@@ -52,13 +51,13 @@ public class groundSpikes : MonoBehaviour {
 
     IEnumerator ActivateDelay() {
         isActive = true;
-        GetComponent<Renderer>().material.color = Color.red;
+        AudioManager.instance.PlayClip(trapSound);
+        anim.SetTrigger("Attack");
 
         yield return new WaitForSeconds(activatedTime);
 
-
         isActive = false;
-        GetComponent<Renderer>().material.color = Color.green;
+        anim.SetTrigger("Hidden");
         waitTime = Random.Range(minTimeToSpike, maxTimeToSpike);
     }
 }
